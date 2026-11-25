@@ -1,0 +1,11 @@
+{
+ "name":"ETHOS Personal AI",
+ "short_name":"ETHOS",
+ "description":"Personal intelligence assistant",
+ "start_url":"./index.html",
+ "scope":"./",
+ "display":"standalone",
+ "background_color":"#08090b",
+ "theme_color":"#08090b",
+ "icons":[{"src":"ethos-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
