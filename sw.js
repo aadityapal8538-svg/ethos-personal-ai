@@ -1,4 +1,4 @@
-const CACHE='ethos-pwa-v1';
+const CACHE='ethos-pwa-v2';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./ethos-icon.svg'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
