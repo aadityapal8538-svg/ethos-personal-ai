@@ -1,14 +1,266 @@
-<!doctype html><html lang="hi"><meta charset="utf-8"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="ethos-icon.svg" type="image/svg+xml"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#08090b"><title>ETHOS Personal AI</title><style>
-*{box-sizing:border-box}body{margin:0;background:#08090b;color:#e8e9eb;font:15px system-ui;min-height:100vh}main{max-width:850px;margin:auto;min-height:100vh;padding:0 14px;display:flex;flex-direction:column}header{height:68px;border-bottom:1px solid #292b30;display:flex;justify-content:space-between;align-items:center}.brand{letter-spacing:4px;font-weight:800}.brand small{display:block;color:#999;font-size:9px;letter-spacing:2px}.status{color:#aaa;font-size:11px}nav{display:flex;gap:6px;overflow:auto;padding:12px 0}button{background:#141619;color:#ccc;border:1px solid #303238;border-radius:9px;padding:10px 12px;cursor:pointer}button.active{border-color:#bd2732;color:white;background:#241316}.page{display:none;flex:1}.page.active{display:flex;flex-direction:column}.hero{text-align:center;padding:28px 0 16px}.orb{width:92px;height:92px;border:1px solid #777;border-radius:50%;display:grid;place-items:center;margin:auto auto 14px;font-size:40px;position:relative}.orb:after{content:'';position:absolute;inset:-7px;border:1px solid #b71d2855;border-radius:50%;transform:rotate(-20deg)}h1{letter-spacing:7px;margin:0}.sub{color:#888;font-size:11px;letter-spacing:2px;margin-top:8px}.chat{flex:1;min-height:180px;max-height:48vh;overflow:auto}.bubble{white-space:pre-wrap;line-height:1.5;padding:12px;border-radius:12px;margin:9px 0;max-width:85%}.ai{background:#131518;border:1px solid #292b2e}.user{margin-left:auto;background:#281417;border:1px solid #55242a}.composer{display:flex;gap:7px;padding:10px 0 18px;position:sticky;bottom:0;background:#08090bf2}.composer textarea{flex:1;background:#121416;border:1px solid #333;color:white;border-radius:10px;padding:12px;font:inherit;resize:none}.send{background:#a9202c;color:#fff;border:0}.card{background:#101214;border:1px solid #292b2f;border-radius:13px;padding:15px;margin:10px 0}.card h3{margin:0 0 8px}.hint{color:#96999e;font-size:13px}.field{width:100%;margin:9px 0 12px;background:#090a0c;color:#eee;border:1px solid #333;border-radius:9px;padding:12px;font:inherit}.item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #292b2f}.done{text-decoration:line-through;color:#777}.foot{text-align:center;color:#62656a;font-size:10px;letter-spacing:2px;padding:16px}
-</style><main><header><div class="brand">ETHOS<small>PERSONAL INTELLIGENCE</small></div><div class="status">● READY</div></header><nav><button class="active" data-p="home">HOME</button><button data-p="memory">MEMORY</button><button data-p="train">TRAIN</button><button data-p="tasks">TASKS</button><button data-p="settings">SETTINGS</button></nav>
-<section id="home" class="page active"><div class="hero"><div class="orb">E</div><h1>ETHOS</h1><div class="sub">YOUR PERSONAL INTELLIGENCE</div></div><div id="chat" class="chat"><div class="bubble ai">नमस्ते। मैं ETHOS हूँ। मैं सोचने, योजना बनाने, रिसर्च और काम व्यवस्थित करने में आपकी मदद कर सकता हूँ। बताइए, क्या करना है?</div></div><div class="composer"><button id="mic">🎙</button><textarea id="message" rows="1" placeholder="ETHOS से बात करें…"></textarea><button class="send" id="send">SEND</button></div></section>
-<section id="memory" class="page"><div class="card"><h3>Personal Memory</h3><p class="hint">इस डिवाइस के ब्राउज़र में सेव होगी।</p><textarea id="meminput" class="field" rows="3" placeholder="याद रखने के लिए कुछ लिखें"></textarea><button id="savemem">SAVE MEMORY</button><div id="memlist"></div></div></section>
-<section id="train" class="page"><div class="card"><h3>Train ETHOS</h3><p class="hint">अपने नियम और जवाब देने का तरीका सेट करें।</p><textarea id="training" class="field" rows="7"></textarea><button id="savetrain">SAVE TRAINING</button></div></section>
-<section id="tasks" class="page"><div class="card"><h3>Tasks & Goals</h3><input id="taskinput" class="field" placeholder="नया काम लिखें"><button id="addtask">ADD TASK</button><div id="tasklist"></div></div></section>
-<section id="settings" class="page"><div class="card"><h3>AI Connection</h3><p class="hint">Real AI responses के लिए Gemini API key जोड़ें। निजी परीक्षण में यह key इसी ब्राउज़र में रखी जाती है; सार्वजनिक ऐप में ऐसा न करें। API इस्तेमाल करने पर शुल्क लग सकता है।</p><input id="key" class="field" type="password" placeholder="Gemini API key"><button id="savekey">SAVE KEY</button> <button id="delkey">REMOVE KEY</button><p class="hint">Voice replies</p><select id="voice" class="field"><option value="off">Off</option><option value="on">Read responses aloud</option></select><button id="clear">CLEAR CHAT</button></div></section><div class="foot">ETHOS • PERSONAL INTELLIGENCE</div></main>
-<script>
-const $=id=>document.getElementById(id),load=(k,d)=>{try{return JSON.parse(localStorage.getItem('ethos_'+k))??d}catch{return d}},save=(k,v)=>localStorage.setItem('ethos_'+k,JSON.stringify(v));let memories=load('mem',[]),tasks=load('tasks',[]),history=load('history',[]),apiKey=load('key',''),training=load('training','Be concise, logical, honest, calm and proactive. Reply in the language I use. Correct me respectfully. Never pretend you performed an action.'),voice=load('voice','off');$('training').value=training;$('voice').value=voice;
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===b.dataset.p))});function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function renderMem(){$('memlist').innerHTML=memories.map((m,i)=>`<div class="item">${esc(m)} <button onclick="delMem(${i})">Delete</button></div>`).join('')}window.delMem=i=>{memories.splice(i,1);save('mem',memories);renderMem()};$('savemem').onclick=()=>{let v=$('meminput').value.trim();if(v){memories.unshift(v);save('mem',memories);$('meminput').value='';renderMem()}};$('savetrain').onclick=()=>{training=$('training').value;save('training',training);alert('Training saved locally')};function renderTasks(){$('tasklist').innerHTML=tasks.map((t,i)=>`<div class="item"><span class="${t.done?'done':''}" onclick="toggleTask(${i})">${t.done?'✓':'○'} ${esc(t.text)}</span><button onclick="delTask(${i})">×</button></div>`).join('')}window.toggleTask=i=>{tasks[i].done=!tasks[i].done;save('tasks',tasks);renderTasks()};window.delTask=i=>{tasks.splice(i,1);save('tasks',tasks);renderTasks()};$('addtask').onclick=()=>{let v=$('taskinput').value.trim();if(v){tasks.unshift({text:v,done:false});save('tasks',tasks);$('taskinput').value='';renderTasks()}};
-$('savekey').onclick=()=>{apiKey=$('key').value.trim();save('key',apiKey);alert('API key saved in this browser')};$('delkey').onclick=()=>{apiKey='';save('key','');$('key').value=''};$('voice').onchange=e=>{voice=e.target.value;save('voice',voice)};
-function addBubble(role,text){let d=document.createElement('div');d.className='bubble '+role;d.textContent=text;$('chat').appendChild(d);$('chat').scrollTop=$('chat').scrollHeight;return d}async function send(){let q=$('message').value.trim();if(!q)return;$('message').value='';addBubble('user',q);history.push({role:'user',text:q});save('history',history);if(!apiKey){addBubble('ai','अभी AI कनेक्ट नहीं है। Settings में Gemini API key जोड़ें। Memory और Tasks अभी स्थानीय रूप से काम करते हैं।');return}let b=addBubble('ai','सोच रहा हूँ…');try{let sys=training+'\nPersonal memories:\n'+memories.join('\n')+'\nYou are ETHOS, my personal assistant. Match the language of the user.';let res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+encodeURIComponent(apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemInstruction:{parts:[{text:sys}]},contents:history.slice(-16).map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.text}]}))})});let data=await res.json();if(!res.ok)throw Error(data.error?.message||'Request failed');let answer=data.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'No answer';b.textContent=answer;history.push({role:'assistant',text:answer});save('history',history);if(voice==='on'&&speechSynthesis){let u=new SpeechSynthesisUtterance(answer);u.lang='hi-IN';speechSynthesis.speak(u)}}catch(e){b.textContent='AI connection failed: '+e.message+' — check key/network.'}}$('send').onclick=send;$('message').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});$('mic').onclick=()=>{let SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('Voice input may not be supported in this browser. Try Chrome.');return}let r=new SR();r.lang='hi-IN';r.onresult=e=>$('message').value=e.results[0][0].transcript;r.onerror=()=>alert('Microphone error—check permissions');r.start()};$('clear').onclick=()=>{history=[];save('history',history);$('chat').innerHTML='';addBubble('ai','Chat cleared. मैं ETHOS हूँ—क्या मदद चाहिए?')};history.forEach(m=>addBubble(m.role==='assistant'?'ai':'user',m.text));renderMem();renderTasks();
-</script><script>if("serviceWorker" in navigator && location.protocol.startsWith("http")){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script></html>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ETHOS • PERSONAL INTELLIGENCE</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: #121214; color: #f4f4f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 14px; }
+    .container { width: 100%; max-width: 520px; display: flex; flex-direction: column; flex: 1; }
+    
+    /* Navigation */
+    .nav { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+    .nav button { background: #1e1e22; color: #a1a1aa; border: 1px solid #2e2e34; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; letter-spacing: 0.5px; }
+    .nav button.active { background: #271a1d; color: #fff; border-color: #e11d48; }
+
+    /* Header Logo */
+    .header { text-align: center; margin-bottom: 20px; }
+    .logo-circle { width: 58px; height: 58px; border-radius: 50%; border: 1px solid #3f3f46; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 22px; font-weight: 600; background: #18181b; }
+    .title { font-size: 20px; letter-spacing: 4px; font-weight: 700; }
+    .subtitle { font-size: 10px; letter-spacing: 2px; color: #71717a; margin-top: 4px; }
+
+    /* Sections */
+    .section { display: none; flex-direction: column; flex: 1; }
+    .section.active { display: flex; }
+
+    /* Chat Box */
+    .chat-box { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 55vh; padding: 6px 2px; margin-bottom: 14px; }
+    .msg { padding: 12px 14px; border-radius: 10px; font-size: 14px; line-height: 1.45; max-width: 88%; word-wrap: break-word; }
+    .msg.user { background: #3f1d24; border: 1px solid #6b2633; align-self: flex-end; color: #fff; }
+    .msg.bot { background: #1e2025; border: 1px solid #2e3138; align-self: flex-start; color: #e4e4e7; }
+
+    /* Input Area */
+    .input-bar { display: flex; gap: 8px; margin-top: auto; }
+    .input-bar input { flex: 1; background: #18181b; border: 1px solid #2e2e34; color: #fff; padding: 12px 14px; border-radius: 10px; font-size: 14px; outline: none; }
+    .btn-red { background: #e11d48; color: #fff; border: none; padding: 0 18px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; }
+    .btn-dark { background: #27272a; color: #fff; border: 1px solid #3f3f46; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+    /* Cards for Memory / Tasks / Settings */
+    .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .card h3 { font-size: 15px; margin-bottom: 6px; }
+    .card p { font-size: 12px; color: #a1a1aa; margin-bottom: 12px; }
+    textarea, .card input { width: 100%; background: #121214; border: 1px solid #2e2e34; color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
+    .list-item { background: #121214; border: 1px solid #27272a; padding: 10px 12px; border-radius: 8px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; }
+    .del-btn { background: #3f3f46; color: #fff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+
+    .footer { text-align: center; font-size: 9px; letter-spacing: 2px; color: #52525b; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Top Tabs -->
+    <div class="nav">
+      <button class="active" onclick="switchTab('home', this)">HOME</button>
+      <button onclick="switchTab('memory', this)">MEMORY</button>
+      <button onclick="switchTab('tasks', this)">TASKS</button>
+      <button onclick="switchTab('settings', this)">SETTINGS</button>
+    </div>
+
+    <!-- HOME TAB -->
+    <div id="home" class="section active">
+      <div class="header">
+        <div class="logo-circle">E</div>
+        <div class="title">ETHOS</div>
+        <div class="subtitle">LOCAL PERSONAL MEMORY (OFFLINE)</div>
+      </div>
+
+      <div id="chatBox" class="chat-box"></div>
+
+      <div class="input-bar">
+        <input id="chatInput" type="text" placeholder="ETHOS से पूछें या बात करें..." onkeydown="if(event.key==='Enter') handleSend()" />
+        <button class="btn-red" onclick="handleSend()">SEND</button>
+      </div>
+    </div>
+
+    <!-- MEMORY TAB -->
+    <div id="memory" class="section">
+      <div class="card">
+        <h3>Personal Memory</h3>
+        <p>यह जानकारी सीधे आपके इसी डिवाइस के ब्राउज़र में सेव होगी (बिना इंटरनेट/API के)।</p>
+        <textarea id="memInput" rows="3" placeholder="उदाहरण: मेरा nickname Rishu है&#10;उदाहरण: 30 nov ko birthday hai"></textarea>
+        <button class="btn-dark" onclick="addMemory()">SAVE MEMORY</button>
+      </div>
+      <div id="memList"></div>
+    </div>
+
+    <!-- TASKS TAB -->
+    <div id="tasks" class="section">
+      <div class="card">
+        <h3>Personal Tasks / Notes</h3>
+        <p>अपने ज़रूरी काम या रिमाइंडर यहाँ सेव करें।</p>
+        <input id="taskInput" type="text" placeholder="नया टास्क लिखें..." onkeydown="if(event.key==='Enter') addTask()" />
+        <button class="btn-dark" onclick="addTask()">ADD TASK</button>
+      </div>
+      <div id="taskList"></div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="settings" class="section">
+      <div class="card">
+        <h3>Local Storage Settings</h3>
+        <p>यह ऐप अब 100% लोकल मोड में है। किसी Gemini API Key की ज़रूरत नहीं है।</p>
+        <button class="btn-dark" onclick="clearChats()">CLEAR CHAT HISTORY</button>
+      </div>
+    </div>
+
+    <div class="footer">ETHOS • PERSONAL INTELLIGENCE</div>
+  </div>
+
+  <script>
+    const MEM_KEY = "ethos_offline_memories";
+    const CHAT_KEY = "ethos_offline_chats";
+    const TASK_KEY = "ethos_offline_tasks";
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // Memory Functions
+    function getMemories() { return JSON.parse(localStorage.getItem(MEM_KEY) || "[]"); }
+    function addMemory() {
+      const inp = document.getElementById('memInput');
+      const val = inp.value.trim();
+      if (!val) return;
+      const list = getMemories();
+      list.push(val);
+      localStorage.setItem(MEM_KEY, JSON.stringify(list));
+      inp.value = "";
+      renderMemories();
+    }
+    function delMemory(idx) {
+      const list = getMemories();
+      list.splice(idx, 1);
+      localStorage.setItem(MEM_KEY, JSON.stringify(list));
+      renderMemories();
+    }
+    function renderMemories() {
+      const list = getMemories();
+      const box = document.getElementById('memList');
+      box.innerHTML = list.map((item, i) => `
+        <div class="list-item">
+          <span>${escapeHtml(item)}</span>
+          <button class="del-btn" onclick="delMemory(${i})">Delete</button>
+        </div>
+      `).join('');
+    }
+
+    // Tasks Functions
+    function getTasks() { return JSON.parse(localStorage.getItem(TASK_KEY) || "[]"); }
+    function addTask() {
+      const inp = document.getElementById('taskInput');
+      const val = inp.value.trim();
+      if (!val) return;
+      const list = getTasks();
+      list.push(val);
+      localStorage.setItem(TASK_KEY, JSON.stringify(list));
+      inp.value = "";
+      renderTasks();
+    }
+    function delTask(idx) {
+      const list = getTasks();
+      list.splice(idx, 1);
+      localStorage.setItem(TASK_KEY, JSON.stringify(list));
+      renderTasks();
+    }
+    function renderTasks() {
+      const list = getTasks();
+      const box = document.getElementById('taskList');
+      box.innerHTML = list.map((item, i) => `
+        <div class="list-item">
+          <span>${escapeHtml(item)}</span>
+          <button class="del-btn" onclick="delTask(${i})">Done</button>
+        </div>
+      `).join('');
+    }
+
+    // Smart Local Search Reply
+    function generateReply(query) {
+      const q = query.toLowerCase().trim();
+      const memories = getMemories();
+      const tasks = getTasks();
+      const allData = [...memories, ...tasks];
+
+      if (["hi", "hii", "hello", "हेलो", "हाय"].includes(q)) {
+        return "Hello! मैं आपकी सेव की हुई Personal Memory से जवाब देने के लिए तैयार हूँ।";
+      }
+
+      if (allData.length === 0) {
+        return "अभी MEMORY या TASKS में कुछ भी सेव नहीं है। ऊपर MEMORY टैब में जाकर अपनी जानकारी सेव करें।";
+      }
+
+      // Nickname direct check
+      if (q.includes("nickname") || q.includes("निकनेम")) {
+        const found = allData.find(m => m.toLowerCase().includes("nickname") || m.toLowerCase().includes("निकनेम"));
+        if (found) {
+          const match = found.match(/(?:nickname|निकनेम)\s*(?:है|hai|is|:|-)?\s*([^\s,.!]+)/i);
+          return match && match[1] ? match[1] : found;
+        }
+      }
+
+      // Keyword matching across saved memories and tasks
+      const stopWords = ["kya", "hai", "hain", "ko", "ka", "ki", "ke", "mera", "meri", "mere", "क्या", "है", "हैं", "को", "का", "की", "मेरा", "मेरी"];
+      const keywords = q.replace(/[?.,!।]/g, "").split(/\s+/).filter(w => w.length > 1 && !stopWords.includes(w));
+
+      let bestMatch = null;
+      let highestScore = 0;
+
+      for (const item of allData) {
+        const lowerItem = item.toLowerCase();
+        let score = 0;
+        for (const kw of keywords) {
+          if (lowerItem.includes(kw)) score++;
+        }
+        if (score > highestScore) {
+          highestScore = score;
+          bestMatch = item;
+        }
+      }
+
+      if (bestMatch && highestScore > 0) {
+        return bestMatch;
+      }
+
+      return "इससे जुड़ी कोई बात आपकी सेव की गई Memory में नहीं मिली।";
+    }
+
+    // Chat Functions
+    function getChats() { return JSON.parse(localStorage.getItem(CHAT_KEY) || "[]"); }
+    function handleSend() {
+      const inp = document.getElementById('chatInput');
+      const text = inp.value.trim();
+      if (!text) return;
+
+      const chats = getChats();
+      chats.push({ role: "user", text });
+      const reply = generateReply(text);
+      chats.push({ role: "bot", text: reply });
+
+      localStorage.setItem(CHAT_KEY, JSON.stringify(chats));
+      inp.value = "";
+      renderChats();
+    }
+    function clearChats() {
+      localStorage.removeItem(CHAT_KEY);
+      renderChats();
+    }
+    function renderChats() {
+      const chats = getChats();
+      const box = document.getElementById('chatBox');
+      box.innerHTML = chats.map(c => `<div class="msg ${c.role}">${escapeHtml(c.text)}</div>`).join('');
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    renderMemories();
+    renderTasks();
+    renderChats();
+  </script>
+</body>
+</html>
