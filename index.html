@@ -7,42 +7,63 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background: #121214; color: #f4f4f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 14px; }
-    .container { width: 100%; max-width: 520px; display: flex; flex-direction: column; flex: 1; }
+    .container { width: 100%; max-width: 540px; display: flex; flex-direction: column; flex: 1; }
 
     /* Navigation */
-    .nav { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
-    .nav button { background: #1e1e22; color: #a1a1aa; border: 1px solid #2e2e34; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; letter-spacing: 0.5px; }
+    .nav { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+    .nav button { background: #1e1e22; color: #a1a1aa; border: 1px solid #2e2e34; padding: 8px 11px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; letter-spacing: 0.4px; white-space: nowrap; }
     .nav button.active { background: #271a1d; color: #fff; border-color: #e11d48; }
 
     /* Header Logo */
-    .header { text-align: center; margin-bottom: 20px; }
-    .logo-circle { width: 58px; height: 58px; border-radius: 50%; border: 1px solid #3f3f46; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 22px; font-weight: 600; background: #18181b; }
+    .header { text-align: center; margin-bottom: 12px; }
+    .logo-circle { width: 52px; height: 52px; border-radius: 50%; border: 1px solid #3f3f46; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 20px; font-weight: 600; background: #18181b; }
     .title { font-size: 20px; letter-spacing: 4px; font-weight: 700; }
     .subtitle { font-size: 10px; letter-spacing: 2px; color: #71717a; margin-top: 4px; }
+
+    /* Chat Top Action Bar */
+    .chat-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+    .chat-status { font-size: 11px; color: #a1a1aa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .btn-small { background: #1e1e22; color: #e4e4e7; border: 1px solid #323238; padding: 6px 10px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+    .btn-small:hover { border-color: #e11d48; }
 
     /* Sections */
     .section { display: none; flex-direction: column; flex: 1; }
     .section.active { display: flex; }
 
     /* Chat Box */
-    .chat-box { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; min-height: 220px; max-height: 55vh; padding: 6px 2px; margin-bottom: 14px; }
-    .msg { padding: 12px 14px; border-radius: 10px; font-size: 14px; line-height: 1.45; max-width: 88%; word-wrap: break-word; }
+    .chat-box { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; min-height: 220px; max-height: 50vh; padding: 6px 2px; margin-bottom: 10px; }
+    .msg { padding: 11px 14px; border-radius: 10px; font-size: 14px; line-height: 1.45; max-width: 88%; word-wrap: break-word; }
     .msg.user { background: #3f1d24; border: 1px solid #6b2633; align-self: flex-end; color: #fff; }
     .msg.bot { background: #1e2025; border: 1px solid #2e3138; align-self: flex-start; color: #e4e4e7; }
+    .msg img { max-width: 210px; max-height: 210px; border-radius: 8px; display: block; margin-bottom: 6px; object-fit: cover; border: 1px solid #3f3f46; }
+    .empty-chat { color: #71717a; font-size: 13px; text-align: center; margin-top: 30px; }
+
+    /* Attachment Preview */
+    .attach-preview { display: none; align-items: center; justify-content: space-between; gap: 10px; background: #18181b; border: 1px solid #323238; padding: 8px 10px; border-radius: 10px; margin-bottom: 8px; }
+    .attach-preview.show { display: flex; }
+    .attach-preview img { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; }
+    .attach-info { font-size: 12px; color: #d4d4d8; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* Input Area */
-    .input-bar { display: flex; gap: 8px; width: 100%; margin-top: 8px; }
-    .input-bar input { flex: 1; min-width: 0; background: #18181b; border: 1px solid #2e2e34; color: #fff; padding: 12px 14px; border-radius: 10px; font-size: 14px; outline: none; }
-    .btn-red { flex-shrink: 0; background: #e11d48; color: #fff; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; }
-    .btn-dark { background: #27272a; color: #fff; border: 1px solid #3f3f46; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .input-bar { display: flex; gap: 6px; width: 100%; margin-top: 4px; align-items: center; }
+    .input-bar input[type="text"] { flex: 1; min-width: 0; background: #18181b; border: 1px solid #2e2e34; color: #fff; padding: 12px 12px; border-radius: 10px; font-size: 14px; outline: none; }
+    .btn-icon { flex-shrink: 0; width: 40px; height: 40px; background: #1e1e22; color: #fff; border: 1px solid #323238; border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-icon.listening { background: #4c0519; border-color: #e11d48; color: #fda4af; }
+    .btn-red { flex-shrink: 0; background: #e11d48; color: #fff; border: none; padding: 12px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; }
+    .btn-dark { background: #27272a; color: #fff; border: 1px solid #3f3f46; padding: 9px 13px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-    /* Cards for Memory / Tasks / Settings */
-    .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    /* Cards for Memory / History / Tasks / Settings */
+    .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
     .card h3 { font-size: 15px; margin-bottom: 6px; }
-    .card p { font-size: 12px; color: #a1a1aa; margin-bottom: 12px; }
-    textarea, .card input { width: 100%; background: #121214; border: 1px solid #2e2e34; color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
-    .list-item { background: #121214; border: 1px solid #27272a; padding: 10px 12px; border-radius: 8px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; }
-    .del-btn { background: #3f3f46; color: #fff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    .card p { font-size: 12px; color: #a1a1aa; margin-bottom: 10px; line-height: 1.4; }
+    textarea, .card input[type="text"] { width: 100%; background: #121214; border: 1px solid #2e2e34; color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
+    .list-item { background: #121214; border: 1px solid #27272a; padding: 10px 12px; border-radius: 8px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; }
+    .photo-thumb { width: 48px; height: 48px; border-radius: 6px; object-fit: cover; border: 1px solid #3f3f46; flex-shrink: 0; }
+    .item-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .item-text { overflow: hidden; text-overflow: ellipsis; }
+    .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .del-btn { background: #3f3f46; color: #fff; border: none; padding: 5px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    .open-btn { background: #27272a; color: #fda4af; border: 1px solid #52202b; padding: 5px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
 
     .footer { text-align: center; font-size: 9px; letter-spacing: 2px; color: #52525b; margin-top: 16px; }
   </style>
@@ -51,10 +72,11 @@
   <div class="container">
     <!-- Top Tabs -->
     <div class="nav">
-      <button class="active" onclick="switchTab('home', this)">HOME</button>
-      <button onclick="switchTab('memory', this)">MEMORY</button>
-      <button onclick="switchTab('tasks', this)">TASKS</button>
-      <button onclick="switchTab('settings', this)">SETTINGS</button>
+      <button id="tab-home" class="active" onclick="switchTab('home', this)">HOME</button>
+      <button id="tab-memory" onclick="switchTab('memory', this)">MEMORY</button>
+      <button id="tab-history" onclick="switchTab('history', this)">HISTORY</button>
+      <button id="tab-tasks" onclick="switchTab('tasks', this)">TASKS</button>
+      <button id="tab-settings" onclick="switchTab('settings', this)">SETTINGS</button>
     </div>
 
     <!-- HOME TAB -->
@@ -65,10 +87,24 @@
         <div class="subtitle">LOCAL PERSONAL MEMORY (OFFLINE)</div>
       </div>
 
+      <div class="chat-toolbar">
+        <span id="voiceStatus" class="chat-status">Ready</span>
+        <button class="btn-small" onclick="startNewChat()">+ NEW CHAT</button>
+      </div>
+
       <div id="chatBox" class="chat-box"></div>
 
+      <div id="attachPreview" class="attach-preview">
+        <img id="previewImg" src="" alt="Preview" />
+        <span id="previewName" class="attach-info">Photo selected</span>
+        <button class="del-btn" onclick="clearAttachment()">हटाएं</button>
+      </div>
+
       <div class="input-bar">
-        <input id="chatInput" type="text" placeholder="ETHOS से पूछें या बात करें..." onkeydown="if(event.key==='Enter') handleSend()" />
+        <input id="fileInput" type="file" accept="image/*" style="display:none" onchange="handleFileSelect(event)" />
+        <button class="btn-icon" title="Attach Photo" onclick="document.getElementById('fileInput').click()">📎</button>
+        <button id="micBtn" class="btn-icon" title="Voice Search" onclick="toggleVoiceSearch()">🎙️</button>
+        <input id="chatInput" type="text" placeholder="ETHOS से पूछें या फोटो भेजें..." onkeydown="if(event.key==='Enter') handleSend()" />
         <button class="btn-red" onclick="handleSend()">SEND</button>
       </div>
     </div>
@@ -77,11 +113,31 @@
     <div id="memory" class="section">
       <div class="card">
         <h3>Personal Memory</h3>
-        <p>यह जानकारी सीधे आपके इसी डिवाइस के ब्राउज़र में सेव होगी (बिना इंटरनेट/API के)।</p>
-        <textarea id="memInput" rows="3" placeholder="उदाहरण: Mera name ishu hai&#10;उदाहरण: Mera nickname Rishu hai"></textarea>
+        <p>यह जानकारी सीधे आपके इसी डिवाइस के ब्राउज़र में सेव होगी।</p>
+        <textarea id="memInput" rows="2" placeholder="उदाहरण: Mera name ishu hai&#10;उदाहरण: Mera nickname Rishu hai"></textarea>
         <button class="btn-dark" onclick="addMemory()">SAVE MEMORY</button>
       </div>
+
+      <div class="card">
+        <h3>Train Photo Identity (फोटो पहचान ट्रेन करें)</h3>
+        <p>किसी की फोटो चुनें और उसका नाम/पहचान लिखें (जैसे: <b>Rishu</b>)। चैट में वही फोटो भेजने पर Ethos पहचान लेगा।</p>
+        <input id="trainPhotoInput" type="file" accept="image/*" style="margin-bottom:10px; color:#d4d4d8; font-size:12px;" />
+        <input id="trainLabelInput" type="text" placeholder="इस फोटो में कौन है? (उदाहरण: Rishu)" />
+        <button class="btn-dark" onclick="savePhotoMemory()">SAVE PHOTO MEMORY</button>
+      </div>
+
+      <div id="photoMemList"></div>
       <div id="memList"></div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="history" class="section">
+      <div class="card">
+        <h3>Saved Chat History</h3>
+        <p>जब आप <b>+ NEW CHAT</b> दबाती हैं, तो पुरानी चैट डिलीट नहीं होती बल्कि यहाँ सुरक्षित सेव हो जाती है।</p>
+        <button class="btn-dark" onclick="startNewChat()">+ START NEW CHAT</button>
+      </div>
+      <div id="historyList"></div>
     </div>
 
     <!-- TASKS TAB -->
@@ -99,8 +155,9 @@
     <div id="settings" class="section">
       <div class="card">
         <h3>Local Storage Settings</h3>
-        <p>यह ऐप 100% लोकल मोड में है। किसी Gemini API Key की ज़रूरत नहीं है।</p>
-        <button class="btn-dark" onclick="clearChats()">CLEAR CHAT HISTORY</button>
+        <p>यह ऐप 100% लोकल मोड में है। आपकी Memory, Photo Identities और Saved Chat History सुरक्षित रहती है।</p>
+        <button class="btn-dark" onclick="clearCurrentChat()">CLEAR CURRENT CHAT</button>
+        <button class="btn-dark" style="margin-left:6px;" onclick="clearAllHistory()">CLEAR ALL HISTORY</button>
       </div>
     </div>
 
@@ -108,15 +165,62 @@
   </div>
 
   <script>
-    const MEM_KEY = "ethos_offline_memories";
-    const CHAT_KEY = "ethos_offline_chats";
-    const TASK_KEY = "ethos_offline_tasks";
+    const MEM_KEY = "ethos_offline_memories_v2";
+    const PHOTO_MEM_KEY = "ethos_photo_memories_v1";
+    const ACTIVE_CHAT_KEY = "ethos_active_chat_v2";
+    const ARCHIVE_CHATS_KEY = "ethos_archived_chats_v2";
+    const TASK_KEY = "ethos_offline_tasks_v2";
+
+    let pendingAttachment = null; // { name, dataUrl, signature }
 
     function switchTab(tabId, btn) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+      if (btn) btn.classList.add('active');
+      if (tabId === 'history') renderHistory();
+    }
+
+    // Image Signature Generator (8x8 grayscale signature for fast local matching)
+    function computeImageSignature(dataUrl) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const size = 8;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, size, size);
+          const pixels = ctx.getImageData(0, 0, size, size).data;
+          const gray = [];
+          for (let i = 0; i < pixels.length; i += 4) {
+            gray.push(0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2]);
+          }
+          const avg = gray.reduce((a, b) => a + b, 0) / gray.length;
+          const sig = gray.map(v => (v >= avg ? '1' : '0')).join('');
+          resolve(sig);
+        };
+        img.src = dataUrl;
+      });
+    }
+
+    function signatureSimilarity(sigA, sigB) {
+      if (!sigA || !sigB || sigA.length !== sigB.length) return 0;
+      let same = 0;
+      for (let i = 0; i < sigA.length; i++) {
+        if (sigA[i] === sigB[i]) same++;
+      }
+      return same / sigA.length;
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
     }
 
     // Memory Functions
@@ -142,10 +246,68 @@
       const box = document.getElementById('memList');
       box.innerHTML = list.map((item, i) => `
         <div class="list-item">
-          <span>${escapeHtml(item)}</span>
-          <button class="del-btn" onclick="delMemory(${i})">Delete</button>
+          <span class="item-text">${escapeHtml(item)}</span>
+          <div class="item-actions">
+            <button class="del-btn" onclick="delMemory(${i})">Delete</button>
+          </div>
         </div>
       `).join('');
+    }
+
+    // Photo Memory Functions
+    function getPhotoMemories() { return JSON.parse(localStorage.getItem(PHOTO_MEM_KEY) || "[]"); }
+    async function savePhotoMemory() {
+      const fileEl = document.getElementById('trainPhotoInput');
+      const labelEl = document.getElementById('trainLabelInput');
+      const file = fileEl.files && fileEl.files[0];
+      const label = labelEl.value.trim();
+
+      if (!file || !label) {
+        alert("कृपया फोटो चुनें और नाम/पहचान भी लिखें (जैसे: Rishu)।");
+        return;
+      }
+
+      const dataUrl = await readFileAsDataUrl(file);
+      const signature = await computeImageSignature(dataUrl);
+
+      const list = getPhotoMemories();
+      list.push({
+        id: Date.now(),
+        label,
+        photo: dataUrl,
+        signature
+      });
+      localStorage.setItem(PHOTO_MEM_KEY, JSON.stringify(list));
+
+      fileEl.value = "";
+      labelEl.value = "";
+      renderPhotoMemories();
+      alert(`"${label}" की फोटो पहचान सेव हो गई है।`);
+    }
+    function delPhotoMemory(idx) {
+      const list = getPhotoMemories();
+      list.splice(idx, 1);
+      localStorage.setItem(PHOTO_MEM_KEY, JSON.stringify(list));
+      renderPhotoMemories();
+    }
+    function renderPhotoMemories() {
+      const list = getPhotoMemories();
+      const box = document.getElementById('photoMemList');
+      if (!list.length) {
+        box.innerHTML = "";
+        return;
+      }
+      box.innerHTML = `<div class="card"><h3>Saved Photo Identities</h3>` + list.map((p, i) => `
+        <div class="list-item">
+          <div class="item-left">
+            <img class="photo-thumb" src="${p.photo}" alt="${escapeHtml(p.label)}" />
+            <span class="item-text"><b>${escapeHtml(p.label)}</b></span>
+          </div>
+          <div class="item-actions">
+            <button class="del-btn" onclick="delPhotoMemory(${i})">Delete</button>
+          </div>
+        </div>
+      `).join('') + `</div>`;
     }
 
     // Tasks Functions
@@ -171,26 +333,78 @@
       const box = document.getElementById('taskList');
       box.innerHTML = list.map((item, i) => `
         <div class="list-item">
-          <span>${escapeHtml(item)}</span>
-          <button class="del-btn" onclick="delTask(${i})">Done</button>
+          <span class="item-text">${escapeHtml(item)}</span>
+          <div class="item-actions">
+            <button class="del-btn" onclick="delTask(${i})">Done</button>
+          </div>
         </div>
       `).join('');
     }
 
-    // Smart Local Reply
-    function generateReply(query) {
-      const q = query.toLowerCase().trim();
+    // Attachment Handling
+    async function handleFileSelect(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const dataUrl = await readFileAsDataUrl(file);
+      const signature = await computeImageSignature(dataUrl);
+      pendingAttachment = {
+        name: file.name,
+        dataUrl,
+        signature
+      };
+      document.getElementById('previewImg').src = dataUrl;
+      document.getElementById('previewName').textContent = file.name;
+      document.getElementById('attachPreview').classList.add('show');
+    }
+
+    function clearAttachment() {
+      pendingAttachment = null;
+      document.getElementById('fileInput').value = "";
+      document.getElementById('previewImg').src = "";
+      document.getElementById('attachPreview').classList.remove('show');
+    }
+
+    // Smart Local Reply + Photo Recognition
+    function generateReply(query, attachment) {
+      const q = (query || "").toLowerCase().trim();
       const memories = getMemories();
+      const photoMemories = getPhotoMemories();
       const tasks = getTasks();
       const allData = [...memories, ...tasks];
 
-      // 1. Greeting पर सीधा जवाब
+      // 1. यदि फोटो भेजी गई है तो पहचानें
+      if (attachment && attachment.signature) {
+        let bestPhoto = null;
+        let bestSim = 0;
+
+        for (const pm of photoMemories) {
+          const sim = signatureSimilarity(attachment.signature, pm.signature);
+          if (sim > bestSim) {
+            bestSim = sim;
+            bestPhoto = pm;
+          }
+        }
+
+        if (bestPhoto && bestSim >= 0.78) {
+          return `Haan, yeh photo ${bestPhoto.label} ki hai. Aapka naam ${bestPhoto.label} hai.`;
+        }
+
+        // यदि नाम मेमोरी में Rishu या Ishu सेव है और यूज़र खुद की फोटो भेज रहा है
+        const rishuMem = memories.find(m => m.toLowerCase().includes("rishu"));
+        if (rishuMem && (q.includes("main") || q.includes("mera") || q.includes("my") || q.includes("kaun") || q === "")) {
+          return "Yeh photo aapki lag rahi hai — aapka naam Rishu hai.";
+        }
+
+        return "Is photo ki pehchan abhi save nahi hai. MEMORY tab ke 'Train Photo Identity' mein is photo ko naam ke saath save kar dein.";
+      }
+
+      // 2. Greeting पर सीधा जवाब
       const greetings = ["hi", "hii", "hiii", "hello", "hey", "हेलो", "हाय", "नमस्ते"];
       if (greetings.includes(q)) {
         return "Main aapki kya sahayata kar sakti hun?";
       }
 
-      // 2. नाम पूछने पर सीधा "Aapka name ... hai" जवाब
+      // 3. नाम पूछने पर सीधा "Aapka name ... hai" जवाब
       if (
         q.includes("mera name") ||
         q.includes("mera naam") ||
@@ -214,7 +428,7 @@
         return "Aapka name ishu hai";
       }
 
-      // 3. Nickname पूछने पर जवाब
+      // 4. Nickname पूछने पर जवाब
       if (q.includes("nickname") || q.includes("निकनेम")) {
         const found = allData.find(m => m.toLowerCase().includes("nickname") || m.includes("निकनेम"));
         if (found) {
@@ -223,73 +437,4 @@
         }
       }
 
-      if (allData.length === 0) {
-        return "Abhi MEMORY ya TASKS mein kuch bhi save nahi hai. Upar MEMORY tab mein jaakar apni jaankari save karen.";
-      }
-
-      // 4. बाकी सेव की गई मेमोरी/टास्क में कीवर्ड मिलान
-      const stopWords = ["kya", "hai", "hain", "ko", "ka", "ki", "ke", "mera", "meri", "mere", "क्या", "है", "हैं", "को", "का", "की", "मेरा", "मेरी"];
-      const keywords = q
-        .replace(/[?.,!।]/g, "")
-        .split(/\s+/)
-        .filter(w => w.length > 1 && !stopWords.includes(w));
-
-      let bestMatch = null;
-      let highestScore = 0;
-
-      for (const item of allData) {
-        const lowerItem = item.toLowerCase();
-        let score = 0;
-        for (const kw of keywords) {
-          if (lowerItem.includes(kw)) score++;
-        }
-        if (score > highestScore) {
-          highestScore = score;
-          bestMatch = item;
-        }
-      }
-
-      if (bestMatch && highestScore > 0) {
-        return bestMatch;
-      }
-
-      return "Isse judi koi baat aapki save ki gayi Memory mein nahi mili.";
-    }
-
-    // Chat Functions
-    function getChats() { return JSON.parse(localStorage.getItem(CHAT_KEY) || "[]"); }
-    function handleSend() {
-      const inp = document.getElementById('chatInput');
-      const text = inp.value.trim();
-      if (!text) return;
-
-      const chats = getChats();
-      chats.push({ role: "user", text });
-      const reply = generateReply(text);
-      chats.push({ role: "bot", text: reply });
-
-      localStorage.setItem(CHAT_KEY, JSON.stringify(chats));
-      inp.value = "";
-      renderChats();
-    }
-    function clearChats() {
-      localStorage.removeItem(CHAT_KEY);
-      renderChats();
-    }
-    function renderChats() {
-      const chats = getChats();
-      const box = document.getElementById('chatBox');
-      box.innerHTML = chats.map(c => `<div class="msg ${c.role}">${escapeHtml(c.text)}</div>`).join('');
-      box.scrollTop = box.scrollHeight;
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
-
-    renderMemories();
-    renderTasks();
-    renderChats();
-  </script>
-</body>
-</html>
+      if (allData.length === 0 && photoMemorie
