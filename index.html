@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -462,4 +461,166 @@
       var att = tempPhoto;
       if (!text && !att) return;
 
-      var chat
+      var chat var chat = loadArr(K_CHAT);
+      var uMsg = {
+        role: "user",
+        text: text,
+        photo: att ? att.url : ""
+      };
+      chat.push(uMsg);
+
+      var replyText = makeReply(text, att);
+      chat.push({
+        role: "bot",
+        text: replyText,
+        photo: ""
+      });
+
+      saveArr(K_CHAT, chat);
+      inp.value = "";
+      clearAttachAction();
+      drawChat();
+    }
+
+    function drawChat() {
+      var chat = loadArr(K_CHAT);
+      var box = document.getElementById("chatBox");
+      if (!box) return;
+
+      if (!chat.length) {
+        box.innerHTML = '<div class="empty-txt">यहाँ अपनी बात शुरू करें या फोटो/वॉयस से पूछें।</div>';
+        return;
+      }
+
+      var html = "";
+      for (var i = 0; i < chat.length; i++) {
+        var m = chat[i] || {};
+        var cls = m.role === "user" ? "msg user" : "msg bot";
+        html += '<div class="' + cls + '">';
+        if (m.photo) {
+          html += '<img src="' + esc(m.photo) + '" alt="Photo" />';
+        }
+        if (m.text) {
+          html += '<div>' + esc(m.text) + '</div>';
+        }
+        html += '</div>';
+      }
+      box.innerHTML = html;
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function newChatAction() {
+      var chat = loadArr(K_CHAT);
+      if (chat.length) {
+        var hist = loadArr(K_HIST);
+        var firstTxt = "";
+        for (var i = 0; i < chat.length; i++) {
+          if (chat[i] && chat[i].text) {
+            firstTxt = chat[i].text;
+            break;
+          }
+        }
+        hist.unshift({
+          id: Date.now(),
+          time: new Date().toLocaleString("hi-IN"),
+          title: firstTxt ? firstTxt.slice(0, 42) : "Saved Chat",
+          messages: chat
+        });
+        saveArr(K_HIST, hist);
+      }
+      saveArr(K_CHAT, []);
+      clearAttachAction();
+      drawChat();
+      drawHistory();
+    }
+
+    function openHistoryAction(idx) {
+      var hist = loadArr(K_HIST);
+      var item = hist[idx];
+      if (!item || !Array.isArray(item.messages)) return;
+      saveArr(K_CHAT, item.messages.slice());
+      drawChat();
+      goTab("home");
+    }
+
+    function delHistoryAction(idx) {
+      var hist = loadArr(K_HIST);
+      hist.splice(idx, 1);
+      saveArr(K_HIST, hist);
+      drawHistory();
+    }
+
+    function drawHistory() {
+      var hist = loadArr(K_HIST);
+      var box = document.getElementById("historyList");
+      if (!box) return;
+      if (!hist.length) {
+        box.innerHTML = '<div class="card"><p style="margin-bottom:0;">अभी कोई पुरानी चैट सेव नहीं है।</p></div>';
+        return;
+      }
+      var html = "";
+      for (var i = 0; i < hist.length; i++) {
+        var h = hist[i];
+        html += '<div class="list-item">' +
+          '<div class="item-l"><span class="item-t"><b>' + esc(h.title || "Chat") + '</b><br><span style="font-size:11px;color:#a1a1aa;">' + esc(h.time || "") + '</span></span></div>' +
+          '<div class="item-a">' +
+          '<button class="btn-opn" type="button" onclick="openHistoryAction(' + i + ')">Open</button>' +
+          '<button class="btn-del" type="button" onclick="delHistoryAction(' + i + ')">Delete</button>' +
+          '</div></div>';
+      }
+      box.innerHTML = html;
+    }
+
+    function clearChatsAction() {
+      saveArr(K_CHAT, []);
+      saveArr(K_HIST, []);
+      drawChat();
+      drawHistory();
+      alert("चैट हिस्ट्री साफ कर दी गई है।");
+    }
+
+    function voiceAction() {
+      var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      var btn = document.getElementById("micBtn");
+      var inp = document.getElementById("chatInput");
+      if (!SpeechRec) {
+        alert("इस ब्राउज़र में वॉयस इनपुट समर्थित नहीं है।");
+        return;
+      }
+      try {
+        var rec = new SpeechRec();
+        rec.lang = "hi-IN";
+        rec.interimResults = false;
+        rec.maxAlternatives = 1;
+        if (btn) btn.classList.add("active-mic");
+        rec.onresult = function(ev) {
+          var said = ev.results && ev.results[0] && ev.results[0][0] ? ev.results[0][0].transcript : "";
+          if (said && inp) {
+            inp.value = said;
+            sendAction();
+          }
+        };
+        rec.onerror = function() {
+          if (btn) btn.classList.remove("active-mic");
+        };
+        rec.onend = function() {
+          if (btn) btn.classList.remove("active-mic");
+        };
+        rec.start();
+      } catch (e) {
+        if (btn) btn.classList.remove("active-mic");
+      }
+    }
+
+    (function initEthos() {
+      drawMem();
+      drawPhotoMem();
+      drawTask();
+      drawChat();
+      drawHistory();
+      var st = document.getElementById("statusTxt");
+      if (st) st.textContent = "Ready";
+    })();
+  </script>
+</body>
+</html>
