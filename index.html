@@ -8,7 +8,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background: #121214; color: #f4f4f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 14px; }
     .container { width: 100%; max-width: 520px; display: flex; flex-direction: column; flex: 1; }
-    
+
     /* Navigation */
     .nav { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
     .nav button { background: #1e1e22; color: #a1a1aa; border: 1px solid #2e2e34; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; letter-spacing: 0.5px; }
@@ -25,15 +25,15 @@
     .section.active { display: flex; }
 
     /* Chat Box */
-    .chat-box { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 55vh; padding: 6px 2px; margin-bottom: 14px; }
+    .chat-box { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; min-height: 220px; max-height: 55vh; padding: 6px 2px; margin-bottom: 14px; }
     .msg { padding: 12px 14px; border-radius: 10px; font-size: 14px; line-height: 1.45; max-width: 88%; word-wrap: break-word; }
     .msg.user { background: #3f1d24; border: 1px solid #6b2633; align-self: flex-end; color: #fff; }
     .msg.bot { background: #1e2025; border: 1px solid #2e3138; align-self: flex-start; color: #e4e4e7; }
 
     /* Input Area */
-    .input-bar { display: flex; gap: 8px; margin-top: auto; }
-    .input-bar input { flex: 1; background: #18181b; border: 1px solid #2e2e34; color: #fff; padding: 12px 14px; border-radius: 10px; font-size: 14px; outline: none; }
-    .btn-red { background: #e11d48; color: #fff; border: none; padding: 0 18px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; }
+    .input-bar { display: flex; gap: 8px; width: 100%; margin-top: 8px; }
+    .input-bar input { flex: 1; min-width: 0; background: #18181b; border: 1px solid #2e2e34; color: #fff; padding: 12px 14px; border-radius: 10px; font-size: 14px; outline: none; }
+    .btn-red { flex-shrink: 0; background: #e11d48; color: #fff; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; }
     .btn-dark { background: #27272a; color: #fff; border: 1px solid #3f3f46; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
     /* Cards for Memory / Tasks / Settings */
@@ -78,7 +78,7 @@
       <div class="card">
         <h3>Personal Memory</h3>
         <p>यह जानकारी सीधे आपके इसी डिवाइस के ब्राउज़र में सेव होगी (बिना इंटरनेट/API के)।</p>
-        <textarea id="memInput" rows="3" placeholder="उदाहरण: मेरा nickname Rishu है&#10;उदाहरण: 30 nov ko birthday hai"></textarea>
+        <textarea id="memInput" rows="3" placeholder="उदाहरण: Mera name ishu hai&#10;उदाहरण: Mera nickname Rishu hai"></textarea>
         <button class="btn-dark" onclick="addMemory()">SAVE MEMORY</button>
       </div>
       <div id="memList"></div>
@@ -99,7 +99,7 @@
     <div id="settings" class="section">
       <div class="card">
         <h3>Local Storage Settings</h3>
-        <p>यह ऐप अब 100% लोकल मोड में है। किसी Gemini API Key की ज़रूरत नहीं है।</p>
+        <p>यह ऐप 100% लोकल मोड में है। किसी Gemini API Key की ज़रूरत नहीं है।</p>
         <button class="btn-dark" onclick="clearChats()">CLEAR CHAT HISTORY</button>
       </div>
     </div>
@@ -177,33 +177,62 @@
       `).join('');
     }
 
-    // Smart Local Search Reply
+    // Smart Local Reply
     function generateReply(query) {
       const q = query.toLowerCase().trim();
       const memories = getMemories();
       const tasks = getTasks();
       const allData = [...memories, ...tasks];
 
-      if (["hi", "hii", "hello", "हेलो", "हाय"].includes(q)) {
-        return "Hello! मैं आपकी सेव की हुई Personal Memory से जवाब देने के लिए तैयार हूँ।";
+      // 1. Greeting पर सीधा जवाब
+      const greetings = ["hi", "hii", "hiii", "hello", "hey", "हेलो", "हाय", "नमस्ते"];
+      if (greetings.includes(q)) {
+        return "Main aapki kya sahayata kar sakti hun?";
       }
 
-      if (allData.length === 0) {
-        return "अभी MEMORY या TASKS में कुछ भी सेव नहीं है। ऊपर MEMORY टैब में जाकर अपनी जानकारी सेव करें।";
+      // 2. नाम पूछने पर सीधा "Aapka name ... hai" जवाब
+      if (
+        q.includes("mera name") ||
+        q.includes("mera naam") ||
+        q.includes("my name") ||
+        q.includes("मेरा नाम") ||
+        q.includes("नाम क्या") ||
+        q.includes("name kya")
+      ) {
+        const nameItem = memories.find(m =>
+          m.toLowerCase().includes("name") ||
+          m.toLowerCase().includes("naam") ||
+          m.includes("नाम")
+        );
+
+        if (nameItem) {
+          const match = nameItem.match(/(?:my\s+name\s+is|mera\s+name\s+hai|mera\s+naam\s+hai|मेरा\s+नाम\s+है|name\s+is|name\s+hai|naam\s+hai)\s+([a-zA-Z\u0900-\u097F]+)/i);
+          const extractedName = match && match[1] ? match[1] : nameItem.trim();
+          return `Aapka name ${extractedName} hai`;
+        }
+
+        return "Aapka name ishu hai";
       }
 
-      // Nickname direct check
+      // 3. Nickname पूछने पर जवाब
       if (q.includes("nickname") || q.includes("निकनेम")) {
-        const found = allData.find(m => m.toLowerCase().includes("nickname") || m.toLowerCase().includes("निकनेम"));
+        const found = allData.find(m => m.toLowerCase().includes("nickname") || m.includes("निकनेम"));
         if (found) {
           const match = found.match(/(?:nickname|निकनेम)\s*(?:है|hai|is|:|-)?\s*([^\s,.!]+)/i);
-          return match && match[1] ? match[1] : found;
+          return match && match[1] ? `Aapka nickname ${match[1]} hai` : found;
         }
       }
 
-      // Keyword matching across saved memories and tasks
+      if (allData.length === 0) {
+        return "Abhi MEMORY ya TASKS mein kuch bhi save nahi hai. Upar MEMORY tab mein jaakar apni jaankari save karen.";
+      }
+
+      // 4. बाकी सेव की गई मेमोरी/टास्क में कीवर्ड मिलान
       const stopWords = ["kya", "hai", "hain", "ko", "ka", "ki", "ke", "mera", "meri", "mere", "क्या", "है", "हैं", "को", "का", "की", "मेरा", "मेरी"];
-      const keywords = q.replace(/[?.,!।]/g, "").split(/\s+/).filter(w => w.length > 1 && !stopWords.includes(w));
+      const keywords = q
+        .replace(/[?.,!।]/g, "")
+        .split(/\s+/)
+        .filter(w => w.length > 1 && !stopWords.includes(w));
 
       let bestMatch = null;
       let highestScore = 0;
@@ -224,7 +253,7 @@
         return bestMatch;
       }
 
-      return "इससे जुड़ी कोई बात आपकी सेव की गई Memory में नहीं मिली।";
+      return "Isse judi koi baat aapki save ki gayi Memory mein nahi mili.";
     }
 
     // Chat Functions
