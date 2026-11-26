@@ -1,1 +1,625 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ETHOS • PERSONAL INTELLIGENCE</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: #121214; color: #f4f4f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 14px; }
+    .container { width: 100%; max-width: 540px; display: flex; flex-direction: column; flex: 1; }
 
+    .nav { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+    .nav button { background: #1e1e22; color: #a1a1aa; border: 1px solid #2e2e34; padding: 8px 11px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .nav button.active { background: #271a1d; color: #fff; border-color: #e11d48; }
+
+    .header { text-align: center; margin-bottom: 12px; }
+    .logo-circle { width: 52px; height: 52px; border-radius: 50%; border: 1px solid #3f3f46; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 20px; font-weight: 600; background: #18181b; }
+    .title { font-size: 20px; letter-spacing: 4px; font-weight: 700; }
+    .subtitle { font-size: 10px; letter-spacing: 2px; color: #71717a; margin-top: 4px; }
+
+    .err-box { display: none; background: #4c0519; border: 1px solid #e11d48; color: #ffe4e6; font-size: 11px; padding: 8px 10px; border-radius: 8px; margin-bottom: 10px; word-break: break-word; }
+
+    .chat-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .status-txt { font-size: 11px; color: #a1a1aa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .btn-sm { background: #1e1e22; color: #f4f4f5; border: 1px solid #323238; padding: 6px 10px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+
+    .section { display: none; flex-direction: column; flex: 1; }
+    .section.active { display: flex; }
+
+    .chat-box { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; min-height: 200px; max-height: 50vh; padding: 6px 2px; margin-bottom: 10px; }
+    .msg { padding: 11px 14px; border-radius: 10px; font-size: 14px; line-height: 1.45; max-width: 88%; word-wrap: break-word; }
+    .msg.user { background: #3f1d24; border: 1px solid #6b2633; align-self: flex-end; color: #fff; }
+    .msg.bot { background: #1e2025; border: 1px solid #2e3138; align-self: flex-start; color: #e4e4e7; }
+    .msg img { max-width: 210px; max-height: 210px; border-radius: 8px; display: block; margin-bottom: 6px; object-fit: cover; border: 1px solid #3f3f46; }
+    .empty-txt { color: #71717a; font-size: 13px; text-align: center; margin-top: 28px; }
+
+    .attach-box { display: none; align-items: center; justify-content: space-between; gap: 10px; background: #18181b; border: 1px solid #323238; padding: 8px 10px; border-radius: 10px; margin-bottom: 8px; }
+    .attach-box.show { display: flex; }
+    .attach-box img { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; }
+    .attach-name { font-size: 12px; color: #d4d4d8; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .input-bar { display: flex; gap: 6px; margin-top: auto; align-items: center; }
+    .input-bar input[type="text"] { flex: 1; min-width: 0; background: #18181b; border: 1px solid #2e2e34; color: #fff; padding: 12px 12px; border-radius: 10px; font-size: 14px; outline: none; }
+    .btn-ico { flex-shrink: 0; width: 40px; height: 40px; background: #1e1e22; color: #fff; border: 1px solid #323238; border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-ico.active-mic { background: #4c0519; border-color: #e11d48; color: #fda4af; }
+    .btn-send { background: #e11d48; color: #fff; border: none; padding: 0 16px; height: 42px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; flex-shrink: 0; }
+    .btn-dk { background: #27272a; color: #fff; border: 1px solid #3f3f46; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+    .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+    .card h3 { font-size: 15px; margin-bottom: 6px; }
+    .card p { font-size: 12px; color: #a1a1aa; margin-bottom: 10px; line-height: 1.4; }
+    textarea, .card input[type="text"] { width: 100%; background: #121214; border: 1px solid #2e2e34; color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
+    .list-item { background: #121214; border: 1px solid #27272a; padding: 10px 12px; border-radius: 8px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; }
+    .item-l { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .item-t { overflow: hidden; text-overflow: ellipsis; }
+    .item-a { display: flex; gap: 6px; flex-shrink: 0; }
+    .thumb { width: 46px; height: 46px; border-radius: 6px; object-fit: cover; border: 1px solid #3f3f46; }
+    .btn-del { background: #3f3f46; color: #fff; border: none; padding: 5px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    .btn-opn { background: #27272a; color: #fda4af; border: 1px solid #52202b; padding: 5px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+
+    .footer { text-align: center; font-size: 9px; letter-spacing: 2px; color: #52525b; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="errBox" class="err-box"></div>
+
+    <div class="nav">
+      <button id="t-home" class="active" type="button" onclick="goTab('home')">HOME</button>
+      <button id="t-memory" type="button" onclick="goTab('memory')">MEMORY</button>
+      <button id="t-history" type="button" onclick="goTab('history')">HISTORY</button>
+      <button id="t-tasks" type="button" onclick="goTab('tasks')">TASKS</button>
+      <button id="t-settings" type="button" onclick="goTab('settings')">SETTINGS</button>
+    </div>
+
+    <div id="home" class="section active">
+      <div class="header">
+        <div class="logo-circle">E</div>
+        <div class="title">ETHOS</div>
+        <div class="subtitle">LOCAL PERSONAL MEMORY (OFFLINE)</div>
+      </div>
+
+      <div class="chat-top">
+        <span id="statusTxt" class="status-txt">Loading...</span>
+        <button class="btn-sm" type="button" onclick="newChatAction()">+ NEW CHAT</button>
+      </div>
+
+      <div id="chatBox" class="chat-box"></div>
+
+      <div id="attachBox" class="attach-box">
+        <img id="attachImg" src="" alt="Preview" />
+        <span id="attachName" class="attach-name">Photo</span>
+        <button class="btn-del" type="button" onclick="clearAttachAction()">हटाएं</button>
+      </div>
+
+      <div class="input-bar">
+        <input id="photoInput" type="file" accept="image/*" style="display:none" onchange="onPhotoAction(event)" />
+        <button class="btn-ico" type="button" title="Attach Photo" onclick="document.getElementById('photoInput').click()">📎</button>
+        <button id="micBtn" class="btn-ico" type="button" title="Voice Search" onclick="voiceAction()">🎙️</button>
+        <input id="chatInput" type="text" placeholder="ETHOS से पूछें या बात करें..." onkeydown="if(event.key==='Enter'){sendAction();}" />
+        <button class="btn-send" type="button" onclick="sendAction()">SEND</button>
+      </div>
+    </div>
+
+    <div id="memory" class="section">
+      <div class="card">
+        <h3>Personal Memory</h3>
+        <p>यह जानकारी सीधे आपके इसी डिवाइस में सेव होगी।</p>
+        <textarea id="memInput" rows="2" placeholder="उदाहरण: Mera name ishu hai"></textarea>
+        <button class="btn-dk" type="button" onclick="addMemAction()">SAVE MEMORY</button>
+      </div>
+
+      <div class="card">
+        <h3>Train Photo Identity</h3>
+        <p>फोटो चुनें और नाम लिखें (जैसे: Rishu)। चैट में वही फोटो भेजने पर पहचान लेगा।</p>
+        <input id="trainPhotoInput" type="file" accept="image/*" style="margin-bottom:10px; color:#d4d4d8; font-size:12px;" />
+        <input id="trainLabelInput" type="text" placeholder="इस फोटो में कौन है? (उदाहरण: Rishu)" />
+        <button class="btn-dk" type="button" onclick="savePhotoMemAction()">SAVE PHOTO MEMORY</button>
+      </div>
+
+      <div id="photoMemList"></div>
+      <div id="memList"></div>
+    </div>
+
+    <div id="history" class="section">
+      <div class="card">
+        <h3>Saved Chat History</h3>
+        <p>+ NEW CHAT दबाने पर पुरानी चैट डिलीट नहीं होती, बल्कि यहाँ सेव रहती है।</p>
+        <button class="btn-dk" type="button" onclick="newChatAction()">+ NEW CHAT</button>
+      </div>
+      <div id="historyList"></div>
+    </div>
+
+    <div id="tasks" class="section">
+      <div class="card">
+        <h3>Personal Tasks / Notes</h3>
+        <p>अपने ज़रूरी काम या रिमाइंडर यहाँ सेव करें।</p>
+        <input id="taskInput" type="text" placeholder="नया टास्क लिखें..." onkeydown="if(event.key==='Enter'){addTaskAction();}" />
+        <button class="btn-dk" type="button" onclick="addTaskAction()">ADD TASK</button>
+      </div>
+      <div id="taskList"></div>
+    </div>
+
+    <div id="settings" class="section">
+      <div class="card">
+        <h3>Local Storage Settings</h3>
+        <p>यह ऐप 100% लोकल मोड में है।</p>
+        <button class="btn-dk" type="button" onclick="clearChatsAction()">CLEAR CHAT HISTORY</button>
+      </div>
+    </div>
+
+    <div class="footer">ETHOS • PERSONAL INTELLIGENCE</div>
+  </div>
+
+  <script>
+    window.onerror = function(msg, src, line) {
+      var box = document.getElementById("errBox");
+      if (box) {
+        box.style.display = "block";
+        box.textContent = "JS Error (Line " + line + "): " + msg;
+      }
+      return false;
+    };
+
+    var K_MEM = "ethos_mem_v6";
+    var K_PMEM = "ethos_pmem_v6";
+    var K_CHAT = "ethos_chat_v6";
+    var K_HIST = "ethos_hist_v6";
+    var K_TASK = "ethos_task_v6";
+
+    var ramStore = {};
+    var tempPhoto = null;
+
+    function loadArr(key) {
+      try {
+        if (window.localStorage) {
+          var raw = window.localStorage.getItem(key);
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+          }
+        }
+      } catch (e) {}
+      return Array.isArray(ramStore[key]) ? ramStore[key].slice() : [];
+    }
+
+    function saveArr(key, arr) {
+      ramStore[key] = arr.slice();
+      try {
+        if (window.localStorage) {
+          window.localStorage.setItem(key, JSON.stringify(arr));
+        }
+      } catch (e) {}
+    }
+
+    function esc(s) {
+      return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function goTab(id) {
+      var secs = document.querySelectorAll(".section");
+      for (var i = 0; i < secs.length; i++) secs[i].classList.remove("active");
+      var btns = document.querySelectorAll(".nav button");
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove("active");
+      var s = document.getElementById(id);
+      var b = document.getElementById("t-" + id);
+      if (s) s.classList.add("active");
+      if (b) b.classList.add("active");
+      if (id === "history") drawHistory();
+    }
+
+    function fileToUrl(file) {
+      return new Promise(function(resolve, reject) {
+        var r = new FileReader();
+        r.onload = function() { resolve(r.result); };
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    function imgSig(url) {
+      return new Promise(function(resolve) {
+        var img = new Image();
+        img.onload = function() {
+          try {
+            var c = document.createElement("canvas");
+            c.width = 8;
+            c.height = 8;
+            var ctx = c.getContext("2d");
+            ctx.drawImage(img, 0, 0, 8, 8);
+            var px = ctx.getImageData(0, 0, 8, 8).data;
+            var g = [];
+            for (var i = 0; i < px.length; i += 4) {
+              g.push(0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2]);
+            }
+            var sum = 0;
+            for (var k = 0; k < g.length; k++) sum += g[k];
+            var avg = sum / g.length;
+            var out = "";
+            for (var m = 0; m < g.length; m++) out += (g[m] >= avg ? "1" : "0");
+            resolve(out);
+          } catch (e) { resolve(""); }
+        };
+        img.onerror = function() { resolve(""); };
+        img.src = url;
+      });
+    }
+
+    function simSig(a, b) {
+      if (!a || !b || a.length !== b.length) return 0;
+      var same = 0;
+      for (var i = 0; i < a.length; i++) {
+        if (a[i] === b[i]) same++;
+      }
+      return same / a.length;
+    }
+
+    function addMemAction() {
+      var el = document.getElementById("memInput");
+      var v = el.value.trim();
+      if (!v) return;
+      var list = loadArr(K_MEM);
+      list.push(v);
+      saveArr(K_MEM, list);
+      el.value = "";
+      drawMem();
+    }
+
+    function delMemAction(idx) {
+      var list = loadArr(K_MEM);
+      list.splice(idx, 1);
+      saveArr(K_MEM, list);
+      drawMem();
+    }
+
+    function drawMem() {
+      var list = loadArr(K_MEM);
+      var box = document.getElementById("memList");
+      var html = "";
+      for (var i = 0; i < list.length; i++) {
+        html += '<div class="list-item"><span class="item-t">' + esc(list[i]) + '</span><button class="btn-del" type="button" onclick="delMemAction(' + i + ')">Delete</button></div>';
+      }
+      box.innerHTML = html;
+    }
+
+    function savePhotoMemAction() {
+      var fEl = document.getElementById("trainPhotoInput");
+      var lEl = document.getElementById("trainLabelInput");
+      var file = fEl.files && fEl.files[0];
+      var label = lEl.value.trim();
+      if (!file || !label) {
+        alert("कृपया फोटो चुनें और नाम लिखें।");
+        return;
+      }
+      fileToUrl(file).then(function(url) {
+        imgSig(url).then(function(sig) {
+          var list = loadArr(K_PMEM);
+          list.push({ id: Date.now(), label: label, photo: url, sig: sig });
+          saveArr(K_PMEM, list);
+          fEl.value = "";
+          lEl.value = "";
+          drawPhotoMem();
+          alert('"' + label + '" की फोटो पहचान सेव हो गई।');
+        });
+      });
+    }
+
+    function delPhotoMemAction(idx) {
+      var list = loadArr(K_PMEM);
+      list.splice(idx, 1);
+      saveArr(K_PMEM, list);
+      drawPhotoMem();
+    }
+
+    function drawPhotoMem() {
+      var list = loadArr(K_PMEM);
+      var box = document.getElementById("photoMemList");
+      if (!list.length) {
+        box.innerHTML = "";
+        return;
+      }
+      var html = '<div class="card"><h3>Saved Photo Identities</h3>';
+      for (var i = 0; i < list.length; i++) {
+        html += '<div class="list-item"><div class="item-l"><img class="thumb" src="' + esc(list[i].photo) + '" alt="" /><span class="item-t"><b>' + esc(list[i].label) + '</b></span></div><button class="btn-del" type="button" onclick="delPhotoMemAction(' + i + ')">Delete</button></div>';
+      }
+      html += '</div>';
+      box.innerHTML = html;
+    }
+
+    function addTaskAction() {
+      var el = document.getElementById("taskInput");
+      var v = el.value.trim();
+      if (!v) return;
+      var list = loadArr(K_TASK);
+      list.push(v);
+      saveArr(K_TASK, list);
+      el.value = "";
+      drawTask();
+    }
+
+    function delTaskAction(idx) {
+      var list = loadArr(K_TASK);
+      list.splice(idx, 1);
+      saveArr(K_TASK, list);
+      drawTask();
+    }
+
+    function drawTask() {
+      var list = loadArr(K_TASK);
+      var box = document.getElementById("taskList");
+      var html = "";
+      for (var i = 0; i < list.length; i++) {
+        html += '<div class="list-item"><span class="item-t">' + esc(list[i]) + '</span><button class="btn-del" type="button" onclick="delTaskAction(' + i + ')">Done</button></div>';
+      }
+      box.innerHTML = html;
+    }
+
+    function onPhotoAction(ev) {
+      var file = ev.target.files && ev.target.files[0];
+      if (!file) return;
+      fileToUrl(file).then(function(url) {
+        imgSig(url).then(function(sig) {
+          tempPhoto = { name: file.name, url: url, sig: sig };
+          document.getElementById("attachImg").src = url;
+          document.getElementById("attachName").textContent = file.name;
+          document.getElementById("attachBox").classList.add("show");
+        });
+      });
+    }
+
+    function clearAttachAction() {
+      tempPhoto = null;
+      document.getElementById("photoInput").value = "";
+      document.getElementById("attachImg").src = "";
+      document.getElementById("attachBox").classList.remove("show");
+    }
+
+    function makeReply(text, att) {
+      var q = String(text || "").toLowerCase().trim();
+      var mems = loadArr(K_MEM);
+      var pmems = loadArr(K_PMEM);
+      var tasks = loadArr(K_TASK);
+      var all = mems.concat(tasks);
+
+      if (att && att.sig) {
+        var best = null;
+        var bestS = 0;
+        for (var i = 0; i < pmems.length; i++) {
+          var s = simSig(att.sig, pmems[i].sig);
+          if (s > bestS) {
+            bestS = s;
+            best = pmems[i];
+          }
+        }
+        if (best && bestS >= 0.78) {
+          return "Haan, yeh photo " + best.label + " ki hai — aapka naam " + best.label + " hai.";
+        }
+        for (var m = 0; m < mems.length; m++) {
+          if (String(mems[m]).toLowerCase().indexOf("rishu") !== -1) {
+            return "Yeh photo aapki lag rahi hai — aapka naam Rishu hai.";
+          }
+        }
+        return "Is photo ki pehchan abhi save nahi hai. MEMORY tab ke Train Photo Identity mein is photo ko naam ke saath save kar dein.";
+      }
+
+      if (q === "hi" || q === "hii" || q === "hiii" || q === "hello" || q === "hey" || q === "हेलो" || q === "हाय") {
+        return "Main aapki kya sahayata kar sakti hun?";
+      }
+
+      if (q.indexOf("mera name") !== -1 || q.indexOf("mera naam") !== -1 || q.indexOf("my name") !== -1 || q.indexOf("मेरा नाम") !== -1 || q.indexOf("name kya") !== -1) {
+        for (var n = 0; n < mems.length; n++) {
+          var lowN = String(mems[n]).toLowerCase();
+          if (lowN.indexOf("name") !== -1 || lowN.indexOf("naam") !== -1 || String(mems[n]).indexOf("नाम") !== -1) {
+            var parts = String(mems[n]).trim().split(/\s+/);
+            var last = parts[parts.length - 1];
+            if (last && ["hai", "is", "naam", "name"].indexOf(last.toLowerCase()) === -1) {
+              return "Aapka name " + last + " hai";
+            }
+            return mems[n];
+          }
+        }
+        return "Aapka name ishu hai";
+      }
+
+      if (!all.length) {
+        return "Abhi MEMORY mein kuch bhi save nahi hai. MEMORY tab mein jaakar apni jaankari save karen.";
+      }
+
+      var stops = ["kya", "hai", "hain", "ko", "ka", "ki", "ke", "mera", "meri", "mere", "क्या", "है", "हैं", "को", "का", "की", "मेरा", "मेरी", "batao", "बताओ"];
+      var clean = q.replace(/[?.,!।]/g, "").split(/\s+/);
+      var kws = [];
+      for (var w = 0; w < clean.length; w++) {
+        if (clean[w].length > 1 && stops.indexOf(clean[w]) === -1) kws.push(clean[w]);
+      }
+
+      var bestItem = null;
+      var bestCnt = 0;
+      for (var x = 0; x < all.length; x++) {
+        var lowX = String(all[x]).toLowerCase();
+        var cnt = 0;
+        for (var y = 0; y < kws.length; y++) {
+          if (lowX.indexOf(kws[y]) !== -1) cnt++;
+        }
+        if (cnt > bestCnt) {
+          bestCnt = cnt;
+          bestItem = all[x];
+        }
+      }
+
+      if (bestItem && bestCnt > 0) return bestItem;
+      return "Isse judi koi baat aapki save ki gayi Memory mein nahi mili.";
+    }
+
+    function sendAction() {
+      var inp = document.getElementById("chatInput");
+      var text = inp.value.trim();
+      var att = tempPhoto;
+      if (!text && !att) return;
+
+      var chat = loadArr(K_CHAT);
+      chat.push({
+        role: "user",
+        text: text,
+        photo: att ? att.url : ""
+      });
+
+      var replyText = makeReply(text, att);
+      chat.push({
+        role: "bot",
+        text: replyText,
+        photo: ""
+      });
+
+      saveArr(K_CHAT, chat);
+      inp.value = "";
+      clearAttachAction();
+      drawChat();
+    }
+
+    function drawChat() {
+      var chat = loadArr(K_CHAT);
+      var box = document.getElementById("chatBox");
+      if (!box) return;
+
+      if (!chat.length) {
+        box.innerHTML = '<div class="empty-txt">यहाँ अपनी बात शुरू करें या फोटो/वॉयस से पूछें।</div>';
+        return;
+      }
+
+      var html = "";
+      for (var i = 0; i < chat.length; i++) {
+        var m = chat[i] || {};
+        var cls = m.role === "user" ? "msg user" : "msg bot";
+        html += '<div class="' + cls + '">';
+        if (m.photo) {
+          html += '<img src="' + esc(m.photo) + '" alt="Photo" />';
+        }
+        if (m.text) {
+          html += '<div>' + esc(m.text) + '</div>';
+        }
+        html += '</div>';
+      }
+      box.innerHTML = html;
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function newChatAction() {
+      var chat = loadArr(K_CHAT);
+      if (chat.length) {
+        var hist = loadArr(K_HIST);
+        var firstTxt = "";
+        for (var i = 0; i < chat.length; i++) {
+          if (chat[i] && chat[i].text) {
+            firstTxt = chat[i].text;
+            break;
+          }
+        }
+        hist.unshift({
+          id: Date.now(),
+          time: new Date().toLocaleString("hi-IN"),
+          title: firstTxt ? firstTxt.slice(0, 42) : "Saved Chat",
+          messages: chat
+        });
+        saveArr(K_HIST, hist);
+      }
+      saveArr(K_CHAT, []);
+      clearAttachAction();
+      drawChat();
+      drawHistory();
+    }
+
+    function openHistoryAction(idx) {
+      var hist = loadArr(K_HIST);
+      var item = hist[idx];
+      if (!item || !Array.isArray(item.messages)) return;
+      saveArr(K_CHAT, item.messages.slice());
+      drawChat();
+      goTab("home");
+    }
+
+    function delHistoryAction(idx) {
+      var hist = loadArr(K_HIST);
+      hist.splice(idx, 1);
+      saveArr(K_HIST, hist);
+      drawHistory();
+    }
+
+    function drawHistory() {
+      var hist = loadArr(K_HIST);
+      var box = document.getElementById("historyList");
+      if (!box) return;
+      if (!hist.length) {
+        box.innerHTML = '<div class="card"><p style="margin-bottom:0;">अभी कोई पुरानी चैट सेव नहीं है।</p></div>';
+        return;
+      }
+      var html = "";
+      for (var i = 0; i < hist.length; i++) {
+        var h = hist[i];
+        html += '<div class="list-item">' +
+          '<div class="item-l"><span class="item-t"><b>' + esc(h.title || "Chat") + '</b><br><span style="font-size:11px;color:#a1a1aa;">' + esc(h.time || "") + '</span></span></div>' +
+          '<div class="item-a">' +
+          '<button class="btn-opn" type="button" onclick="openHistoryAction(' + i + ')">Open</button>' +
+          '<button class="btn-del" type="button" onclick="delHistoryAction(' + i + ')">Delete</button>' +
+          '</div></div>';
+      }
+      box.innerHTML = html;
+    }
+
+    function clearChatsAction() {
+      saveArr(K_CHAT, []);
+      saveArr(K_HIST, []);
+      drawChat();
+      drawHistory();
+      alert("चैट हिस्ट्री साफ कर दी गई है।");
+    }
+
+    function voiceAction() {
+      var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      var btn = document.getElementById("micBtn");
+      var inp = document.getElementById("chatInput");
+      if (!SpeechRec) {
+        alert("इस ब्राउज़र में वॉयस इनपुट समर्थित नहीं है।");
+        return;
+      }
+      try {
+        var rec = new SpeechRec();
+        rec.lang = "hi-IN";
+        rec.interimResults = false;
+        rec.maxAlternatives = 1;
+        if (btn) btn.classList.add("active-mic");
+        rec.onresult = function(ev) {
+          var said = ev.results && ev.results[0] && ev.results[0][0] ? ev.results[0][0].transcript : "";
+          if (said && inp) {
+            inp.value = said;
+            sendAction();
+          }
+        };
+        rec.onerror = function() {
+          if (btn) btn.classList.remove("active-mic");
+        };
+        rec.onend = function() {
+          if (btn) btn.classList.remove("active-mic");
+        };
+        rec.start();
+      } catch (e) {
+        if (btn) btn.classList.remove("active-mic");
+      }
+    }
+
+    (function initEthos() {
+      drawMem();
+      drawPhotoMem();
+      drawTask();
+      drawChat();
+      drawHistory();
+      var st = document.getElementById("statusTxt");
+      if (st) st.textContent = "Ready";
+    })();
+  </script>
+</body>
+</html>
